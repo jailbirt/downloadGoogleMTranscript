@@ -3,20 +3,18 @@
   <head>
     <style>
       body {
-        width: 300px;
-        height: 200px;
-        margin: 0;
-        padding: 16px;
-        font-family: Arial, sans-serif;
-      }
-      #status {
-        margin-bottom: 16px;
+        width: 200px;
+        height: 100px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
       }
     </style>
   </head>
   <body>
-    <div id="status">Click the button to start capturing captions.</div>
-    <button id="capture-button">Start capturing</button>
+    <button id="start-capture-button">Start capturing</button>
+    <button id="stop-capture-button">Stop capturing</button>
     <script src="popup.js"></script>
   </body>
 </html>

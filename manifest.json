@@ -2,8 +2,7 @@
   "manifest_version": 2,
   "name": "Google Meet Captions Capture",
   "version": "1.0",
-  "description": "Capture captions from Google Meet",
-  "permissions": ["activeTab", "tabs"],
+  "description": "Capture Google Meet captions and save them to a file.",
   "browser_action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -12,10 +11,14 @@
       "128": "icon128.png"
     }
   },
+  "permissions": [
+    "activeTab"
+  ],
   "content_scripts": [
     {
-      "matches": ["*://meet.google.com/*"],
-      "js": ["content.js"]
+      "matches": ["*://*.google.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
     }
   ]
 }
