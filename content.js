@@ -10,7 +10,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   } else if (message.action === "stopCapture") {
     console.log("Stop capture message received");
     captureActive = false;
-    createDownloadLink(captionsData);
+    const processedCaptions = processCaptions(captionsData);
+    createDownloadLink(processedCaptions);
     sendResponse({ success: true });
     captionsData = "";
   }
@@ -27,6 +28,29 @@ async function captureCaptions() {
     }
   }
 }
+
+function processCaptions(captions) {
+  const lines = captions.split('\n');
+  const filteredLines = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    let isSubsequence = false;
+    for (let j = i + 1; j < lines.length && j < i + 10; j++) {
+      if (lines[j].length > lines[i].length && lines[j].toLowerCase().startsWith(lines[i].toLowerCase())) {
+        isSubsequence = true;
+        break;
+      }
+    }
+
+    if (!isSubsequence) {
+      filteredLines.push(lines[i]);
+    }
+  }
+
+  return filteredLines.join('\n');
+}
+
+
 
 function createDownloadLink(data) {
   const blob = new Blob([data], { type: "text/plain;charset=utf-8" });
