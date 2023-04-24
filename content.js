@@ -36,7 +36,10 @@ function processCaptions(captions) {
   for (let i = 0; i < lines.length; i++) {
     let isSubsequence = false;
     for (let j = i + 1; j < lines.length && j < i + 10; j++) {
-      if (lines[j].length > lines[i].length && lines[j].toLowerCase().startsWith(lines[i].toLowerCase())) {
+      const currentLine = lines[i].slice(0, -1).toLowerCase();
+      const nextLine = lines[j].slice(0, -1).toLowerCase();
+
+      if (nextLine.length > currentLine.length && nextLine.startsWith(currentLine)) {
         isSubsequence = true;
         break;
       }
@@ -49,7 +52,6 @@ function processCaptions(captions) {
 
   return filteredLines.join('\n');
 }
-
 
 
 function createDownloadLink(data) {
