@@ -1,7 +1,7 @@
 // With this line
 chrome.storage.local.set({ 'captionsData': captions + "\n" });
 let captureActive = false;
-const debug = 1; // Set to 1 for enabling debug, and 0 for disabling it
+const debug = 0; // Set to 1 for enabling debug, and 0 for disabling it
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "startCapture") {
