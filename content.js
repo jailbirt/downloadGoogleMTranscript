@@ -1,22 +1,30 @@
-let captionsData = "";
+// With this line
+chrome.storage.local.set({ 'captionsData': captions + "\n" });
 let captureActive = false;
 const debug = 1; // Set to 1 for enabling debug, and 0 for disabling it
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "startCapture") {
     console.log("Start capture message received");
-    captureActive = true;
+    chrome.storage.local.set({ 'captureActive': true });
     captureCaptions();
     sendResponse({ success: true });
   } else if (message.action === "stopCapture") {
-  console.log("Stop capture message received");
-  captureActive = false;
-  const processedData = processCaptions(captionsData);
-  createDownloadLink(captionsData, processedData);
-  sendResponse({ success: true });
-  captionsData = "";
+    console.log("Stop capture message received");
+    chrome.storage.local.set({ 'captureActive': false });
+    chrome.storage.local.get('captionsData', (result) => {
+      const captionsData = result.captionsData || '';
+      const processedData = processCaptions(captionsData);
+      createDownloadLink(captionsData, processedData);
+    });
+
+    createDownloadLink(captionsData, processedData);
+    sendResponse({ success: true });
+    captionsData = "";
   }
+  return true; // Keep the message channel open for async responses
 });
+
 
 async function captureCaptions() {
   while (captureActive) {
@@ -56,8 +64,6 @@ function processCaptions(captions) {
   return filteredLines.join('\n');
 }
 
-
-
 function createDownloadLink(originalData, processedData) {
   let data = "";
   if (debug) {
@@ -68,8 +74,7 @@ function createDownloadLink(originalData, processedData) {
   }
   data += processedData;
 
-  const blob = new Blob([data], { type: "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  chrome.runtime.sendMessage({ action: "downloadCaptions", url });
+  chrome.runtime.sendMessage({ action: "downloadCaptions", data });
+  chrome.storage.local.remove('captionsData');
 }
 
