@@ -51,6 +51,7 @@ stopButton.addEventListener("click", () => {
       console.log("Stop capture message sent", response);
     });
   });
+  recordingMessage.textContent = "Processing..."; // Change the message to "Processing..."
 });
 
 chrome.runtime.onMessage.addListener((message) => {
@@ -58,3 +59,4 @@ chrome.runtime.onMessage.addListener((message) => {
     createDownloadLink(message.data);
   }
 });
+
