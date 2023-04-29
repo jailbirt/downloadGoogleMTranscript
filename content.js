@@ -1,6 +1,7 @@
 let captureActive = false;
 const debug = 0; // Set to 1 for enabling debug, and 0 for disabling it
 let captionsData = "";
+let amountOfLines= 50; //number of lines to compare before.
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "startCapture") {
@@ -60,7 +61,7 @@ function processCaptions(captions) {
 
   for (let i = 0; i < lines.length; i++) {
     let isSubsequence = false;
-    for (let j = i + 1; j < lines.length && j < i + 50; j++) {
+    for (let j = i + 1; j < lines.length && j < i + amountOfLines; j++) {
       const currentLine = removePunctuation(lines[i].toLowerCase());
       const nextLine = removePunctuation(lines[j].toLowerCase());
 
@@ -86,9 +87,8 @@ function createDownloadLink(originalData, processedData) {
     data += "****************************************************** ORIGINAL ************************\n";
     data += originalData;
     data += "\n\n****************************************************** PROCESSED *******************\n";
-  } else {
-    data = processedData;
-  }
+  } 
+    data += processedData;
 
   chrome.runtime.sendMessage({ action: "downloadCaptions", data });
   chrome.storage.local.remove('captionsData');
