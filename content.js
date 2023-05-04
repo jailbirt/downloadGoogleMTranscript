@@ -38,7 +38,7 @@ async function captureCaptions() {
   await updateCaptureActive();
 
   while (captureActive) {
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 10000)); //Increase capture time to 10s
 
     await updateCaptureActive();
 
