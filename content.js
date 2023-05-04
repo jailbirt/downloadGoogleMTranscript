@@ -1,7 +1,7 @@
 let captureActive = false;
 const debug = 0; // Set to 1 for enabling debug, and 0 for disabling it
 let captionsData = "";
-let amountOfLines= 200; //number of lines to compare before.
+let amountOfLines= 100; //number of lines to compare before.
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "startCapture") {
