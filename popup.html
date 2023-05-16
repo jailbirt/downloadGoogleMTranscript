@@ -13,9 +13,10 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      margin-bottom: 2rem;
     }
     button, a {
-      background-color: #3f51b5;
+      background-color: #146ac9;
       color: white;
       border: none;
       padding: 0.5rem 1rem;
@@ -27,14 +28,41 @@
       display: inline-block;
     }
     button:hover, a:hover {
-      background-color: #283593;
+      background-color: #004E96;
+    }
+    footer {
+      width: 100%;
+      text-align: center;
+      position: fixed;
+      bottom: 0;
+      background-color: transparent;
+      padding: 0.5rem 0;
+    }
+    footer a {
+      background-color: transparent;
+      color: #fb7c00;
+      text-decoration: none;
+      font-size: 0.7rem; /* Ajusta el tamaño de fuente según tus necesidades */
+    }
+    #recording-message {
+      text-align: center;
+      margin-top: 2rem;
+    }
+    footer a:hover {
+      background-color: transparent;
+      color: #00305b;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
-	<button id="start-capture-button">Start capturing</button>
-	<button id="stop-capture-button">Stop capturing</button>
-	<p id="recording-message"></p>
-	<script src="popup.js"></script>
+  <button id="start-capture-button">Start capturing</button>
+  <button id="stop-capture-button">Stop capturing</button>
+  <br>
+  <p id="recording-message"> ACTIVATE THE SUBTITLES! </p>
+  <script src="popup.js"></script>
+  <footer>
+    <a href="https://theeye.io?utm_source=theeye&utm_medium=extension&utm_campaign=google+meet+caption" target="_blank">theeye.io</a>
+  </footer>
 </body>
 </html>

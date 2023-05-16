@@ -1,7 +1,8 @@
 let captureActive = false;
 const debug = 0; // Set to 1 for enabling debug, and 0 for disabling it
 let captionsData = "";
-let amountOfLines= 100; //number of lines to compare before.
+let amountOfLines= 130; //number of lines to compare before.
+let captureTime=30000;  //Increase capture time to 30s
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "startCapture") {
@@ -38,7 +39,7 @@ async function captureCaptions() {
   await updateCaptureActive();
 
   while (captureActive) {
-    await new Promise((resolve) => setTimeout(resolve, 10000)); //Increase capture time to 10s
+    await new Promise((resolve) => setTimeout(resolve, captureTime)); 
 
     await updateCaptureActive();
 
@@ -93,4 +94,3 @@ function createDownloadLink(originalData, processedData) {
   chrome.runtime.sendMessage({ action: "downloadCaptions", data });
   chrome.storage.local.remove('captionsData');
 }
-
