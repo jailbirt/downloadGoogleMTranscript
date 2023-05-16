@@ -2,10 +2,14 @@ const startButton = document.getElementById("start-capture-button");
 const stopButton = document.getElementById("stop-capture-button");
 const recordingMessage = document.getElementById("recording-message");
 
-chrome.storage.local.get(['captureActive', 'captionsData'], (result) => {
+chrome.storage.local.get('captureActive', (result) => {
   if (result.captureActive) {
     recordingMessage.textContent = 'Recording...';
-  } else if (result.captionsData) {
+  }
+});
+
+chrome.storage.local.get('captionsData', (result) => {
+  if (result.captionsData) {
     createDownloadLink(result.captionsData);
   }
 });
@@ -59,4 +63,3 @@ chrome.runtime.onMessage.addListener((message) => {
     createDownloadLink(message.data);
   }
 });
-

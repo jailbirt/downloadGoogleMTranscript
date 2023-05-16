@@ -25,9 +25,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return true; // Keep the message channel open for async responses
 });
 
-
-async function captureCaptions() {
-  const updateCaptureActive = async () => {
+function captureCaptions() {
+  const updateCaptureActive = () => {
     return new Promise((resolve) => {
       chrome.storage.local.get('captureActive', (result) => {
         captureActive = result.captureActive;
@@ -36,23 +35,24 @@ async function captureCaptions() {
     });
   };
 
-  await updateCaptureActive();
-
-  while (captureActive) {
-    await new Promise((resolve) => setTimeout(resolve, captureTime)); 
-
-    await updateCaptureActive();
-
-    const captionsElement = document.querySelector("div[jsname='YSxPC']");
-    if (captionsElement) {
-      const captions = captionsElement.innerText;
-      console.log("Captured captions:", captions);
-      captionsData += captions + "\n";
-      chrome.storage.local.set({ 'captionsData': captionsData });
-    }
-  }
+  updateCaptureActive().then(() => {
+    const intervalId = setInterval(() => {
+      updateCaptureActive().then(() => {
+        if (!captureActive) {
+          clearInterval(intervalId);
+        } else {
+          const captionsElement = document.querySelector("div[jsname='YSxPC']");
+          if (captionsElement) {
+            const captions = captionsElement.innerText;
+            console.log("Captured captions:", captions);
+            captionsData += captions + "\n";
+            chrome.storage.local.set({ 'captionsData': captionsData });
+          }
+        }
+      });
+    }, captureTime);
+  });
 }
-
 
 function processCaptions(captions) {
   const lines = captions.split('\n');
@@ -88,9 +88,10 @@ function createDownloadLink(originalData, processedData) {
     data += "****************************************************** ORIGINAL ************************\n";
     data += originalData;
     data += "\n\n****************************************************** PROCESSED *******************\n";
-  } 
+  }
     data += processedData;
 
-  chrome.runtime.sendMessage({ action: "downloadCaptions", data });
-  chrome.storage.local.remove('captionsData');
+  chrome.storage.local.set({ 'captionsData': data }, () => {
+    chrome.runtime.sendMessage({ action: "downloadCaptions", data });
+  });
 }
