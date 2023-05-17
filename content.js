@@ -1,8 +1,7 @@
 let captureActive = false;
 const debug = 0; // Set to 1 for enabling debug, and 0 for disabling it
 let captionsData = "";
-let amountOfLines= 130; //number of lines to compare before.
-let captureTime=30000;  //Increase capture time to 30s
+let captureTime=12000;  //capture time to 10s
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "startCapture") {
@@ -57,23 +56,15 @@ function captureCaptions() {
 function processCaptions(captions) {
   const lines = captions.split('\n');
   const filteredLines = [];
+  const seenLines = new Set();
 
   const removePunctuation = (str) => str.replace(/[\p{P}\p{Z}]/gu, "");
 
   for (let i = 0; i < lines.length; i++) {
-    let isSubsequence = false;
-    for (let j = i + 1; j < lines.length && j < i + amountOfLines; j++) {
-      const currentLine = removePunctuation(lines[i].toLowerCase());
-      const nextLine = removePunctuation(lines[j].toLowerCase());
-
-      if (nextLine.length > currentLine.length && nextLine.includes(currentLine)) {
-        isSubsequence = true;
-        break;
-      }
-    }
-
-    if (!isSubsequence) {
+    const currentLine = removePunctuation(lines[i].toLowerCase());
+    if (!seenLines.has(currentLine)) {
       filteredLines.push(lines[i]);
+      seenLines.add(currentLine);
     }
   }
 
