@@ -1,7 +1,7 @@
 let captureActive = false;
 const debug = 0; // Set to 1 for enabling debug, and 0 for disabling it
 let captionsData = "";
-let captureTime=15000;  //Increase capture time to 10s
+let captureTime=16000;  //Increase capture time to 16s
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "ping") {
