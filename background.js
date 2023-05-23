@@ -10,9 +10,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
-self.addEventListener("unload", () => {
-  chrome.storage.local.set({ captureActive: false }, () => {
-    console.log("Capture status reset");
-  });
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "startCapture" || message.action === "stopCapture") {
+    chrome.storage.local.set({ captureActive: message.captureActive }, () => {
+      console.log("Capture status updated");
+    });
+  }
 });
-

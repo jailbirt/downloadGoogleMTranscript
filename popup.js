@@ -2,17 +2,33 @@ const startButton = document.getElementById("start-capture-button");
 const stopButton = document.getElementById("stop-capture-button");
 const recordingMessage = document.getElementById("recording-message");
 
-chrome.storage.local.get('captureActive', (result) => {
+// Get the captureActive state from storage when the popup is opened
+chrome.storage.local.get(['captureActive', 'captionsData'], (result) => {
   if (result.captureActive) {
     recordingMessage.textContent = 'Recording...';
-  }
-});
-
-chrome.storage.local.get('captionsData', (result) => {
-  if (result.captionsData) {
+  } else if (result.captionsData) {
     createDownloadLink(result.captionsData);
   }
 });
+
+function sendMessageToContentScript(message) {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+  const tabId = tabs[0].id;
+  // Send a "ping" message to the content script
+  chrome.tabs.sendMessage(tabId, { action: "ping" }, (response) => {
+    if (chrome.runtime.lastError) {
+      // The content script is not ready to receive messages
+      if (chrome.runtime.lastError.message) {
+        console.error(chrome.runtime.lastError.message);
+      }
+    } else if (response && response.ready) {
+      // The content script is ready to receive messages
+      chrome.tabs.sendMessage(tabId, message);
+    }
+   });
+  });
+
+}
 
 function createDownloadLink(captionsData) {
   // Remove existing download link if present
@@ -40,6 +56,7 @@ function removeDownloadLink() {
 }
 
 startButton.addEventListener("click", () => {
+  sendMessageToContentScript({ action: "startCapture" });
   removeDownloadLink(); // Add this line to remove the download link
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     chrome.tabs.sendMessage(tabs[0].id, { action: "startCapture" }, (response) => {
@@ -50,6 +67,7 @@ startButton.addEventListener("click", () => {
 });
 
 stopButton.addEventListener("click", () => {
+  sendMessageToContentScript({ action: "stopCapture" });
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     chrome.tabs.sendMessage(tabs[0].id, { action: "stopCapture" }, (response) => {
       console.log("Stop capture message sent", response);
