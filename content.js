@@ -1,7 +1,8 @@
 let captureActive = false;
 const debug = 0; // Set to 1 for enabling debug, and 0 for disabling it
 let captionsData = "";
-let captureTime=16000;  //Increase capture time to 16s
+let linesToCompare = 100; //Lines forwards to compare
+let captureTime=10000;  //Increase capture time to 10s
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "ping") {
@@ -56,18 +57,22 @@ function processCaptions(captions) {
   const removePunctuation = (str) => str.replace(/[\p{P}\p{Z}]/gu, "");
 
   for (let i = 0; i < lines.length; i++) {
-    // If this is the first line, add it to the filtered lines
-    if (i === 0) {
-      filteredLines.push(lines[i]);
-    } else {
-      // If this line is not a substring of the next line, add it to the filtered lines
-      const currentLine = removePunctuation(lines[i].toLowerCase());
-      const nextLine = i + 1 < lines.length ? removePunctuation(lines[i + 1].toLowerCase()) : null;
-      if (!nextLine || !nextLine.includes(currentLine)) {
-        filteredLines.push(lines[i]);
+    const currentLine = removePunctuation(lines[i].toLowerCase());
+
+    let isSubsequence = false;
+    for (let j = i + 1; j <= i + linesToCompare && j < lines.length; j++) {
+      const nextLine = removePunctuation(lines[j].toLowerCase());
+      if (nextLine.includes(currentLine)) {
+        isSubsequence = true;
+        break;
       }
     }
+
+    if (!isSubsequence) {
+      filteredLines.push(lines[i]);
+    }
   }
+
   return filteredLines.join('\n');
 }
 
